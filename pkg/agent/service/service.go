@@ -57,11 +57,11 @@ func NewService(
 	s.router.Handle("/metrics/host", newHostMetricsHandler())
 	s.router.Handle("/metrics/agent", promhttp.Handler())
 
-	s.router.HandleFunc("/debug/pprof/", pprof.Index)
 	s.router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	s.router.HandleFunc("/debug/pprof/profile", pprof.Profile)
 	s.router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	s.router.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	s.router.PathPrefix("/debug/pprof/").HandlerFunc(pprof.Index)
 
 	return s
 }

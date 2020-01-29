@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"sync/atomic"
 
 	"github.com/deviceplane/deviceplane/pkg/agent/service/client"
@@ -69,14 +70,20 @@ func (s *Service) deviceDebug(w http.ResponseWriter, r *http.Request,
 	projectID, authenticatedUserID, authenticatedServiceAccountID,
 	deviceID string,
 ) {
-	vars := mux.Vars(r)
-	debugPath := vars["debugPath"]
+	path := r.URL.EscapedPath()
+	dIndex := strings.Index(path, "/debug/")
+	if dIndex == -1 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	debugPath := path[dIndex:]
+
 	s.withDeviceConnection(w, r, projectID, deviceID, func(deviceConn net.Conn) {
 		req, err := http.NewRequestWithContext(
 			r.Context(),
-			"GET",
-			"/debug/"+debugPath,
-			nil,
+			r.Method,
+			debugPath,
+			r.Body,
 		)
 		if err != nil {
 			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
