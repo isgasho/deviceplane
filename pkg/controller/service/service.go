@@ -236,6 +236,7 @@ func NewService(
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/ssh", s.validateAuthorization(authz.ResourceDevices, authz.ActionSSH, s.withDevice(s.initiateSSH))).Methods("GET")
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/reboot", s.validateAuthorization(authz.ResourceDevices, authz.ActionReboot, s.withDevice(s.initiateReboot))).Methods("POST")
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/applications/{application}/services/{service}/imagepullprogress", s.validateAuthorization(authz.ResourceDevices, authz.ActionGetImagePullProgress, s.withDevice(s.imagePullProgress))).Methods("GET")
+	apiRouter.HandleFunc("/projects/{project}/devices/{device}/debug/{debugPath:.*}", s.validateAuthorization(authz.ResourceDevices, authz.ActionGetMetrics, s.withDevice(s.imagePullProgress))).Methods("GET")
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/metrics/host", s.validateAuthorization(authz.ResourceDevices, authz.ActionGetMetrics, s.withDevice(s.hostMetrics))).Methods("GET")
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/metrics/agent", s.validateAuthorization(authz.ResourceDevices, authz.ActionGetMetrics, s.withDevice(s.agentMetrics))).Methods("GET")
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/applications/{application}/services/{service}/metrics", s.validateAuthorization(authz.ResourceDevices, authz.ActionGetServiceMetrics, s.withApplicationAndDevice(s.serviceMetrics))).Methods("GET")

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bufio"
 	"io"
 	"net"
 	"net/http"
@@ -55,6 +56,39 @@ func (s *Service) initiateReboot(w http.ResponseWriter, r *http.Request,
 ) {
 	s.withDeviceConnection(w, r, projectID, deviceID, func(deviceConn net.Conn) {
 		resp, err := client.InitiateReboot(r.Context(), deviceConn)
+		if err != nil {
+			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
+			return
+		}
+
+		utils.ProxyResponseFromDevice(w, resp)
+	})
+}
+
+func (s *Service) deviceDebug(w http.ResponseWriter, r *http.Request,
+	projectID, authenticatedUserID, authenticatedServiceAccountID,
+	deviceID string,
+) {
+	vars := mux.Vars(r)
+	debugPath := vars["debugPath"]
+	s.withDeviceConnection(w, r, projectID, deviceID, func(deviceConn net.Conn) {
+		req, err := http.NewRequestWithContext(
+			r.Context(),
+			"GET",
+			"/debug/"+debugPath,
+			nil,
+		)
+		if err != nil {
+			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
+			return
+		}
+
+		if err := req.Write(deviceConn); err != nil {
+			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
+			return
+		}
+
+		resp, err := http.ReadResponse(bufio.NewReader(deviceConn), req)
 		if err != nil {
 			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
 			return
