@@ -1,5 +1,7 @@
 describe('Login', function() {
-  it('Does not do much!', function() {
-    expect(true).to.equal(true);
+  it('should render', () => {
+    cy.visit('/login');
+
+    cy.matchImageSnapshot('login');
   });
 });

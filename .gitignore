@@ -6,6 +6,7 @@ cmd/controller/controller
 cmd/deviceplane/deviceplane
 ui/build
 ui/node_modules
-ui/screenshotsFolder
-ui/videosFolder
+ui/cypress/videos
+__diff_output__
+
 .DS_Store

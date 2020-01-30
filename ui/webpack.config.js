@@ -115,7 +115,6 @@ module.exports = () => {
       port: 3000,
       historyApiFallback: true,
       overlay: true,
-      open: true,
       publicPath: '/',
       hot: true,
       transportMode: 'ws',
