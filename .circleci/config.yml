@@ -20,6 +20,14 @@ jobs:
       - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin
       - run: CONTROLLER_VERSION=$CIRCLE_SHA1 make push-controller
 
+  test-ui:
+    docker:
+      - image: cypress/base:13.6.0
+    steps:
+      - checkout
+      - run: cd ui && npm i
+      - run: npm test
+
   build-ui:
     docker:
       - image: circleci/node:13.6
@@ -143,6 +151,12 @@ workflows:
           filters:
             branches:
               only: master
+      - test-ui:
+        requires:
+          - test
+        filters:
+          branches:
+            only: /^ui|playground$/
       - build-ui:
           requires:
             - test
